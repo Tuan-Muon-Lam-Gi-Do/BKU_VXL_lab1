@@ -94,6 +94,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	// MAIN DO NOT THING
+
 }
   /* USER CODE END 3 */
 /**
