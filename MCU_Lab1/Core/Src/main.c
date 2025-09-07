@@ -54,6 +54,24 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void display7SEG(int num) {
+
+    HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin|d_Pin|e_Pin|f_Pin|g_Pin, GPIO_PIN_SET);
+
+    switch(num) {
+        case 0: HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin|d_Pin|e_Pin|f_Pin, GPIO_PIN_RESET); break;
+        case 1: HAL_GPIO_WritePin(GPIOB, b_Pin|c_Pin, GPIO_PIN_RESET); break;
+        case 2: HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|d_Pin|e_Pin|g_Pin, GPIO_PIN_RESET); break;
+        case 3: HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin|d_Pin|g_Pin, GPIO_PIN_RESET); break;
+        case 4: HAL_GPIO_WritePin(GPIOB, b_Pin|c_Pin|f_Pin|g_Pin, GPIO_PIN_RESET); break;
+        case 5: HAL_GPIO_WritePin(GPIOB, a_Pin|c_Pin|d_Pin|f_Pin|g_Pin, GPIO_PIN_RESET); break;
+        case 6: HAL_GPIO_WritePin(GPIOB, a_Pin|c_Pin|d_Pin|e_Pin|f_Pin|g_Pin, GPIO_PIN_RESET); break;
+        case 7: HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin, GPIO_PIN_RESET); break;
+        case 8: HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin|d_Pin|e_Pin|f_Pin|g_Pin, GPIO_PIN_RESET); break;
+        case 9: HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin|d_Pin|f_Pin|g_Pin, GPIO_PIN_RESET); break;
+        default: break;
+    }
+}
 
 /* USER CODE END 0 */
 
@@ -64,7 +82,9 @@ static void MX_GPIO_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+    int mode = 0;
+    int mode_delay[4] = {3, 2, 3, 2}; // số giây của mỗi trạng thái
+    int counter = mode_delay[mode];    // bộ đếm giây hiện tại
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -86,8 +106,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-int mode=0;
-int mode_delay[4] = {3000, 2000, 3000, 2000};
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -97,45 +116,47 @@ int mode_delay[4] = {3000, 2000, 3000, 2000};
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	      switch (mode)
-	      {
-	          case 0: // Bắc - Nam xanh (3s), �?ông - Tây đ�? (5s)
-	              HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Green_led2_Pin, GPIO_PIN_RESET);  // NS xanh
-	              HAL_GPIO_WritePin(GPIOA, Yellow_led1_Pin|Yellow_led2_Pin, GPIO_PIN_SET);
-	              HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Red_led2_Pin, GPIO_PIN_SET);
 
-	              HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_RESET);      // EW đ�?
-	              HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Green_led4_Pin, GPIO_PIN_SET);
-	              HAL_GPIO_WritePin(GPIOB, Yellow_led3_Pin|Yellow_led4_Pin, GPIO_PIN_SET);
-	              break;
 
-	          case 1: // Bắc - Nam vàng (2s)
-	              HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Green_led2_Pin, GPIO_PIN_SET);
-	              HAL_GPIO_WritePin(GPIOA, Yellow_led1_Pin|Yellow_led2_Pin, GPIO_PIN_RESET);
-	              HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Red_led2_Pin, GPIO_PIN_SET);
-	              break;
+	   switch(mode) {
+	        case 0: // NS xanh, EW đỏ
+	            HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Green_led2_Pin, GPIO_PIN_SET);
+	            HAL_GPIO_WritePin(GPIOA, Yellow_led1_Pin|Red_led1_Pin|Yellow_led2_Pin|Red_led2_Pin, GPIO_PIN_RESET);
+	            HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_SET);
+	            HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Yellow_led3_Pin|Green_led4_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
+	            break;
+	        case 1: // NS vàng, EW đỏ
+	            HAL_GPIO_WritePin(GPIOA, Yellow_led1_Pin|Yellow_led2_Pin, GPIO_PIN_SET);
+	            HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Red_led1_Pin|Green_led2_Pin|Red_led2_Pin, GPIO_PIN_RESET);
+	            HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_SET);
+	            HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Yellow_led3_Pin|Green_led4_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
+	            break;
+	        case 2: // EW xanh, NS đỏ
+	            HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Green_led4_Pin, GPIO_PIN_SET);
+	            HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Yellow_led3_Pin|Red_led4_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
+	            HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Red_led2_Pin, GPIO_PIN_SET);
+	            HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Yellow_led1_Pin|Green_led2_Pin|Yellow_led2_Pin, GPIO_PIN_RESET);
+	            break;
+	        case 3: // EW vàng, NS đỏ
+	            HAL_GPIO_WritePin(GPIOB, Yellow_led3_Pin|Yellow_led4_Pin, GPIO_PIN_SET);
+	            HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Green_led3_Pin|Red_led4_Pin|Green_led4_Pin, GPIO_PIN_RESET);
+	            HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Red_led2_Pin, GPIO_PIN_SET);
+	            HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Yellow_led1_Pin|Green_led2_Pin|Yellow_led2_Pin, GPIO_PIN_RESET);
+	            break;
+	    }
 
-	          case 2: // �?ông - Tây xanh (3s), Bắc - Nam đ�? (5s)
-	              HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Green_led4_Pin, GPIO_PIN_RESET);  // EW xanh
-	              HAL_GPIO_WritePin(GPIOB, Yellow_led3_Pin|Yellow_led4_Pin, GPIO_PIN_SET);
-	              HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_SET);
+	           display7SEG(counter); // hiển thị số giây còn lại
+	           HAL_Delay(1000);      // delay 1 giây
+	           counter--;            // giảm bộ đếm
 
-	              HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Red_led2_Pin, GPIO_PIN_RESET);      // NS đ�?
-	              HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Green_led2_Pin, GPIO_PIN_SET);
-	              HAL_GPIO_WritePin(GPIOA, Yellow_led1_Pin|Yellow_led2_Pin, GPIO_PIN_SET);
-	              break;
+	           if(counter <= 0) {
+	               mode++;                  // sang trạng thái tiếp theo
+	               if(mode > 3) mode = 0;   // quay lại mode 0
+	               counter = mode_delay[mode]; // reset bộ đếm giây
+	           }
 
-	          case 3: // �?ông - Tây vàng (2s)
-	              HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Green_led4_Pin, GPIO_PIN_SET);
-	              HAL_GPIO_WritePin(GPIOB, Yellow_led3_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
-	              HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_SET);
-	              break;
-	      }
-	      HAL_Delay(mode_delay[mode]);
-	      mode++;
-	      if (mode > 3) mode = 0;
+	       }
 
-  }
   /* USER CODE END 3 */
 }
 
@@ -192,8 +213,10 @@ static void MX_GPIO_Init(void)
                           |Yellow_led2_Pin|Green_led2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Red__led3_Pin|Yellow_led3_Pin|Green_led3_Pin|Red_led4_Pin
-                          |Yellow_led4_Pin|Green_led4_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin|Red_led3_Pin
+                          |Yellow_led3_Pin|Green_led3_Pin|Red_led4_Pin|Yellow_led4_Pin
+                          |Green_led4_Pin|d_Pin|e_Pin|f_Pin
+                          |g_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : Red_led1_Pin Yellow_led1_Pin Green_led1_Pin Red_led2_Pin
                            Yellow_led2_Pin Green_led2_Pin */
@@ -204,10 +227,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Red__led3_Pin Yellow_led3_Pin Green_led3_Pin Red_led4_Pin
-                           Yellow_led4_Pin Green_led4_Pin */
-  GPIO_InitStruct.Pin = Red__led3_Pin|Yellow_led3_Pin|Green_led3_Pin|Red_led4_Pin
-                          |Yellow_led4_Pin|Green_led4_Pin;
+  /*Configure GPIO pins : a_Pin b_Pin c_Pin Red_led3_Pin
+                           Yellow_led3_Pin Green_led3_Pin Red_led4_Pin Yellow_led4_Pin
+                           Green_led4_Pin d_Pin e_Pin f_Pin
+                           g_Pin */
+  GPIO_InitStruct.Pin = a_Pin|b_Pin|c_Pin|Red_led3_Pin
+                          |Yellow_led3_Pin|Green_led3_Pin|Red_led4_Pin|Yellow_led4_Pin
+                          |Green_led4_Pin|d_Pin|e_Pin|f_Pin
+                          |g_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
