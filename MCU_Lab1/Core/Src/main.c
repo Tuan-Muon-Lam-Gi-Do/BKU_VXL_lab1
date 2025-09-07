@@ -47,6 +47,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -83,8 +84,10 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-
+int mode=0;
+int mode_delay[4] = {3000, 2000, 3000, 2000};
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -94,11 +97,48 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	      switch (mode)
+	      {
+	          case 0: // Bắc - Nam xanh (3s), �?ông - Tây đ�? (5s)
+	              HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Green_led2_Pin, GPIO_PIN_RESET);  // NS xanh
+	              HAL_GPIO_WritePin(GPIOA, Yellow_led1_Pin|Yellow_led2_Pin, GPIO_PIN_SET);
+	              HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Red_led2_Pin, GPIO_PIN_SET);
 
-	// MAIN DO NOT THING
+	              HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_RESET);      // EW đ�?
+	              HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Green_led4_Pin, GPIO_PIN_SET);
+	              HAL_GPIO_WritePin(GPIOB, Yellow_led3_Pin|Yellow_led4_Pin, GPIO_PIN_SET);
+	              break;
 
-}
+	          case 1: // Bắc - Nam vàng (2s)
+	              HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Green_led2_Pin, GPIO_PIN_SET);
+	              HAL_GPIO_WritePin(GPIOA, Yellow_led1_Pin|Yellow_led2_Pin, GPIO_PIN_RESET);
+	              HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Red_led2_Pin, GPIO_PIN_SET);
+	              break;
+
+	          case 2: // �?ông - Tây xanh (3s), Bắc - Nam đ�? (5s)
+	              HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Green_led4_Pin, GPIO_PIN_RESET);  // EW xanh
+	              HAL_GPIO_WritePin(GPIOB, Yellow_led3_Pin|Yellow_led4_Pin, GPIO_PIN_SET);
+	              HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_SET);
+
+	              HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Red_led2_Pin, GPIO_PIN_RESET);      // NS đ�?
+	              HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Green_led2_Pin, GPIO_PIN_SET);
+	              HAL_GPIO_WritePin(GPIOA, Yellow_led1_Pin|Yellow_led2_Pin, GPIO_PIN_SET);
+	              break;
+
+	          case 3: // �?ông - Tây vàng (2s)
+	              HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Green_led4_Pin, GPIO_PIN_SET);
+	              HAL_GPIO_WritePin(GPIOB, Yellow_led3_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
+	              HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_SET);
+	              break;
+	      }
+	      HAL_Delay(mode_delay[mode]);
+	      mode++;
+	      if (mode > 3) mode = 0;
+
+  }
   /* USER CODE END 3 */
+}
+
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -132,6 +172,36 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Yellow_led1_Pin|Green_led1_Pin|Red_led2_Pin
+                          |Yellow_led2_Pin|Green_led2_Pin|Red_led3_Pin|Yellow_led3_Pin
+                          |Green_led3_Pin|Red_led4_Pin|Yellow_led4_Pin|Green_led4_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pins : Red_led1_Pin Yellow_led1_Pin Green_led1_Pin Red_led2_Pin
+                           Yellow_led2_Pin Green_led2_Pin Red_led3_Pin Yellow_led3_Pin
+                           Green_led3_Pin Red_led4_Pin Yellow_led4_Pin Green_led4_Pin */
+  GPIO_InitStruct.Pin = Red_led1_Pin|Yellow_led1_Pin|Green_led1_Pin|Red_led2_Pin
+                          |Yellow_led2_Pin|Green_led2_Pin|Red_led3_Pin|Yellow_led3_Pin
+                          |Green_led3_Pin|Red_led4_Pin|Yellow_led4_Pin|Green_led4_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
 }
 
 /* USER CODE BEGIN 4 */
