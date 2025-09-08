@@ -82,9 +82,8 @@ void display7SEG(int num) {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-    int mode = 0;
-    int mode_delay[4] = {3, 2, 3, 2}; // số giây của mỗi trạng thái
-    int counter = mode_delay[mode];    // bộ đếm giây hiện tại
+int mode=0;
+int counter=5;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -116,44 +115,45 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
-
+	    display7SEG(counter);
 	   switch(mode) {
 	        case 0: // NS xanh, EW đỏ
 	            HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Green_led2_Pin, GPIO_PIN_SET);
 	            HAL_GPIO_WritePin(GPIOA, Yellow_led1_Pin|Red_led1_Pin|Yellow_led2_Pin|Red_led2_Pin, GPIO_PIN_RESET);
 	            HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_SET);
 	            HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Yellow_led3_Pin|Green_led4_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
+	            if(counter==3) {counter--;mode++;}
+	            else counter--;
 	            break;
 	        case 1: // NS vàng, EW đỏ
 	            HAL_GPIO_WritePin(GPIOA, Yellow_led1_Pin|Yellow_led2_Pin, GPIO_PIN_SET);
 	            HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Red_led1_Pin|Green_led2_Pin|Red_led2_Pin, GPIO_PIN_RESET);
 	            HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_SET);
 	            HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Yellow_led3_Pin|Green_led4_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
+	            if(counter==0) {counter=3;mode++;}
+	            else counter--;
 	            break;
 	        case 2: // EW xanh, NS đỏ
 	            HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Green_led4_Pin, GPIO_PIN_SET);
 	            HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Yellow_led3_Pin|Red_led4_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
 	            HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Red_led2_Pin, GPIO_PIN_SET);
 	            HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Yellow_led1_Pin|Green_led2_Pin|Yellow_led2_Pin, GPIO_PIN_RESET);
+	            if(counter==0) {counter=2;mode++;}
+	            else counter--;
 	            break;
 	        case 3: // EW vàng, NS đỏ
 	            HAL_GPIO_WritePin(GPIOB, Yellow_led3_Pin|Yellow_led4_Pin, GPIO_PIN_SET);
 	            HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Green_led3_Pin|Red_led4_Pin|Green_led4_Pin, GPIO_PIN_RESET);
 	            HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Red_led2_Pin, GPIO_PIN_SET);
 	            HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Yellow_led1_Pin|Green_led2_Pin|Yellow_led2_Pin, GPIO_PIN_RESET);
+	            if(counter==0) {counter=5;mode=0;}
+	            else counter--;
 	            break;
 	    }
 
-	           display7SEG(counter); // hiển thị số giây còn lại
 	           HAL_Delay(1000);      // delay 1 giây
-	           counter--;            // giảm bộ đếm
 
-	           if(counter <= 0) {
-	               mode++;                  // sang trạng thái tiếp theo
-	               if(mode > 3) mode = 0;   // quay lại mode 0
-	               counter = mode_delay[mode]; // reset bộ đếm giây
-	           }
+
 
 	       }
 
