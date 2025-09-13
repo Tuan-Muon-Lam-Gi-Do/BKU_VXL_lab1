@@ -47,13 +47,22 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+uint16_t led_pins[12] = {
+    a0_Pin, a1_Pin, a2_Pin, a3_Pin,
+    a4_Pin, a5_Pin, a6_Pin, a7_Pin,
+    a8_Pin, a9_Pin, a10_Pin, a11_Pin
+};
 
+int oldHour = -1;
+int oldMinute = -1;
+int oldSecond = -1;
 /* USER CODE END 0 */
 
 /**
@@ -63,7 +72,7 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	int hour = 0, minute = 0, second = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -83,8 +92,9 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-
+  displayClock(hour, minute, second);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -94,11 +104,26 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  HAL_Delay(1000); // Đợi 1 giây
 
-	// MAIN DO NOT THING
+	     // Cập nhật thời gian
+	     second++;
+	     if (second >= 60) {
+	         second = 0;
+	         minute++;
+	     }
+	     if (minute >= 60) {
+	         minute = 0;
+	         hour++;
+	     }
+	     if (hour >= 12) hour = 0;
 
+	     // Hiển thị đồng hồ
+	     displayClock(hour, minute, second);
 }
   /* USER CODE END 3 */
+}
+
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -134,7 +159,87 @@ void SystemClock_Config(void)
   }
 }
 
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, a0_Pin|a1_Pin|a2_Pin|a3_Pin
+                          |a4_Pin|a5_Pin|a6_Pin|a7_Pin
+                          |a8_Pin|a9_Pin|a10_Pin|a11_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pins : a0_Pin a1_Pin a2_Pin a3_Pin
+                           a4_Pin a5_Pin a6_Pin a7_Pin
+                           a8_Pin a9_Pin a10_Pin a11_Pin */
+  GPIO_InitStruct.Pin = a0_Pin|a1_Pin|a2_Pin|a3_Pin
+                          |a4_Pin|a5_Pin|a6_Pin|a7_Pin
+                          |a8_Pin|a9_Pin|a10_Pin|a11_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+}
+
 /* USER CODE BEGIN 4 */
+void clearAllClock(void) {
+    for (int i = 0; i < 12; i++) {
+        HAL_GPIO_WritePin(GPIOA, led_pins[i], GPIO_PIN_SET);
+    }
+}
+
+// Bật LED tại vị trí num (0–11)
+void setNumberOnClock(int num) {
+    if (num < 0 || num > 11) return;
+    HAL_GPIO_WritePin(GPIOA, led_pins[num], GPIO_PIN_RESET);
+}
+
+// Tắt LED tại vị trí num (0–11)
+void clearNumberOnClock(int num) {
+    if (num < 0 || num > 11) return;
+    HAL_GPIO_WritePin(GPIOA, led_pins[num], GPIO_PIN_SET);
+}
+
+// Hiển thị đồng hồ analog với giờ, phút, giây
+void displayClock(int hour, int minute, int second) {
+    // Tính vị trí LED cho giờ, phút, giây
+    int hourPos = hour % 12; // Giờ trong định dạng 12 giờ
+    int minPos = minute / 5; // Mỗi 5 phút tương ứng 1 LED
+    int secPos = second / 5; // Mỗi 5 giây tương ứng 1 LED
+
+    // Xóa LED ở vị trí cũ nếu không còn được sử dụng bởi kim nào
+    if (oldHour != hourPos && oldHour != -1 && oldHour != minPos && oldHour != secPos) {
+        clearNumberOnClock(oldHour);
+    }
+    if (oldMinute != minPos && oldMinute != -1 && oldMinute != hourPos && oldMinute != secPos) {
+        clearNumberOnClock(oldMinute);
+    }
+    if (oldSecond != secPos && oldSecond != -1 && oldSecond != hourPos && oldSecond != minPos) {
+        clearNumberOnClock(oldSecond);
+    }
+
+    // Bật LED cho giờ, phút, giây, kiểm tra chồng lấn
+    setNumberOnClock(hourPos); // Kim giờ
+    if (minPos != hourPos) {
+        setNumberOnClock(minPos); // Kim phút
+    }
+    if (secPos != hourPos && secPos != minPos) {
+        setNumberOnClock(secPos); // Kim giây
+    }
+
+    // Cập nhật trạng thái hiện tại
+    oldHour = hourPos;
+    oldMinute = minPos;
+    oldSecond = secPos;
+}
 
 /* USER CODE END 4 */
 
