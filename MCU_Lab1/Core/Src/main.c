@@ -54,24 +54,26 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void display7SEG(int num) {
+void display7SEG(int num, int a, int b, int c, int d, int e, int f, int g) {
+    // Tắt hết các segment trước
+    HAL_GPIO_WritePin(GPIOB, a|b|c|d|e|f|g, GPIO_PIN_SET);
 
-    HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin|d_Pin|e_Pin|f_Pin|g_Pin, GPIO_PIN_SET);
-
+    // Bật theo số cần hiển thị
     switch(num) {
-        case 0: HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin|d_Pin|e_Pin|f_Pin, GPIO_PIN_RESET); break;
-        case 1: HAL_GPIO_WritePin(GPIOB, b_Pin|c_Pin, GPIO_PIN_RESET); break;
-        case 2: HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|d_Pin|e_Pin|g_Pin, GPIO_PIN_RESET); break;
-        case 3: HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin|d_Pin|g_Pin, GPIO_PIN_RESET); break;
-        case 4: HAL_GPIO_WritePin(GPIOB, b_Pin|c_Pin|f_Pin|g_Pin, GPIO_PIN_RESET); break;
-        case 5: HAL_GPIO_WritePin(GPIOB, a_Pin|c_Pin|d_Pin|f_Pin|g_Pin, GPIO_PIN_RESET); break;
-        case 6: HAL_GPIO_WritePin(GPIOB, a_Pin|c_Pin|d_Pin|e_Pin|f_Pin|g_Pin, GPIO_PIN_RESET); break;
-        case 7: HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin, GPIO_PIN_RESET); break;
-        case 8: HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin|d_Pin|e_Pin|f_Pin|g_Pin, GPIO_PIN_RESET); break;
-        case 9: HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin|d_Pin|f_Pin|g_Pin, GPIO_PIN_RESET); break;
+        case 0: HAL_GPIO_WritePin(GPIOB, a|b|c|d|e|f, GPIO_PIN_RESET); break;
+        case 1: HAL_GPIO_WritePin(GPIOB, b|c, GPIO_PIN_RESET); break;
+        case 2: HAL_GPIO_WritePin(GPIOB, a|b|d|e|g, GPIO_PIN_RESET); break;
+        case 3: HAL_GPIO_WritePin(GPIOB, a|b|c|d|g, GPIO_PIN_RESET); break;
+        case 4: HAL_GPIO_WritePin(GPIOB, b|c|f|g, GPIO_PIN_RESET); break;
+        case 5: HAL_GPIO_WritePin(GPIOB, a|c|d|f|g, GPIO_PIN_RESET); break;
+        case 6: HAL_GPIO_WritePin(GPIOB, a|c|d|e|f|g, GPIO_PIN_RESET); break;
+        case 7: HAL_GPIO_WritePin(GPIOB, a|b|c, GPIO_PIN_RESET); break;
+        case 8: HAL_GPIO_WritePin(GPIOB, a|b|c|d|e|f|g, GPIO_PIN_RESET); break;
+        case 9: HAL_GPIO_WritePin(GPIOB, a|b|c|d|f|g, GPIO_PIN_RESET); break;
         default: break;
     }
 }
+
 
 /* USER CODE END 0 */
 
@@ -84,6 +86,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
 int mode=0;
 int counter=5;
+int sec_counter=3;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -115,39 +118,56 @@ int counter=5;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	    display7SEG(counter);
+	  display7SEG(counter, a_Pin, b_Pin, c_Pin, d_Pin, e_Pin, f_Pin, g_Pin);
+	  display7SEG(sec_counter, a2_Pin, b2_Pin, c2_Pin, d2_Pin, e2_Pin, f2_Pin, g2_Pin);
 	   switch(mode) {
-	        case 0: // NS xanh, EW đỏ
+	        case 0: // NS xanh, EW đ�?
 	            HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Green_led2_Pin, GPIO_PIN_SET);
 	            HAL_GPIO_WritePin(GPIOA, Yellow_led1_Pin|Red_led1_Pin|Yellow_led2_Pin|Red_led2_Pin, GPIO_PIN_RESET);
-	            HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_SET);
-	            HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Yellow_led3_Pin|Green_led4_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
-	            if(counter==3) {counter--;mode++;}
-	            else counter--;
+	            HAL_GPIO_WritePin(GPIOA, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_SET);
+	            HAL_GPIO_WritePin(GPIOA, Green_led3_Pin|Yellow_led3_Pin|Green_led4_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
+	            if(counter==3) {
+	            	counter--;
+	            	mode++;
+	            	sec_counter=2;
+	            }
+	            else {
+	            	counter--;
+					sec_counter--;
+	            }
 	            break;
-	        case 1: // NS vàng, EW đỏ
+	        case 1: // NS vàng, EW đ�?
 	            HAL_GPIO_WritePin(GPIOA, Yellow_led1_Pin|Yellow_led2_Pin, GPIO_PIN_SET);
 	            HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Red_led1_Pin|Green_led2_Pin|Red_led2_Pin, GPIO_PIN_RESET);
-	            HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_SET);
-	            HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Yellow_led3_Pin|Green_led4_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
-	            if(counter==0) {counter=3;mode++;}
-	            else counter--;
+	            HAL_GPIO_WritePin(GPIOA, Red_led3_Pin|Red_led4_Pin, GPIO_PIN_SET);
+	            HAL_GPIO_WritePin(GPIOA, Green_led3_Pin|Yellow_led3_Pin|Green_led4_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
+	            if(counter==1) {counter=3;mode++;sec_counter=5;}
+	            else {
+	            	counter--;
+					sec_counter--;
+	            }
 	            break;
-	        case 2: // EW xanh, NS đỏ
-	            HAL_GPIO_WritePin(GPIOB, Green_led3_Pin|Green_led4_Pin, GPIO_PIN_SET);
-	            HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Yellow_led3_Pin|Red_led4_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
+	        case 2: // EW xanh, NS đ�?
+	            HAL_GPIO_WritePin(GPIOA, Green_led3_Pin|Green_led4_Pin, GPIO_PIN_SET);
+	            HAL_GPIO_WritePin(GPIOA, Red_led3_Pin|Yellow_led3_Pin|Red_led4_Pin|Yellow_led4_Pin, GPIO_PIN_RESET);
 	            HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Red_led2_Pin, GPIO_PIN_SET);
 	            HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Yellow_led1_Pin|Green_led2_Pin|Yellow_led2_Pin, GPIO_PIN_RESET);
-	            if(counter==0) {counter=2;mode++;}
-	            else counter--;
+	            if(counter==1) {counter=2;mode++;sec_counter--;}
+	            else {
+	            	counter--;
+					sec_counter--;
+	            }
 	            break;
-	        case 3: // EW vàng, NS đỏ
-	            HAL_GPIO_WritePin(GPIOB, Yellow_led3_Pin|Yellow_led4_Pin, GPIO_PIN_SET);
-	            HAL_GPIO_WritePin(GPIOB, Red_led3_Pin|Green_led3_Pin|Red_led4_Pin|Green_led4_Pin, GPIO_PIN_RESET);
+	        case 3: // EW vàng, NS đ�?
+	            HAL_GPIO_WritePin(GPIOA, Yellow_led3_Pin|Yellow_led4_Pin, GPIO_PIN_SET);
+	            HAL_GPIO_WritePin(GPIOA, Red_led3_Pin|Green_led3_Pin|Red_led4_Pin|Green_led4_Pin, GPIO_PIN_RESET);
 	            HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Red_led2_Pin, GPIO_PIN_SET);
 	            HAL_GPIO_WritePin(GPIOA, Green_led1_Pin|Yellow_led1_Pin|Green_led2_Pin|Yellow_led2_Pin, GPIO_PIN_RESET);
-	            if(counter==0) {counter=5;mode=0;}
-	            else counter--;
+	            if(counter==1) {counter=5;mode=0;sec_counter=3;}
+	            else {
+	            	counter--;
+					sec_counter--;
+	            }
 	            break;
 	    }
 
@@ -210,31 +230,34 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, Red_led1_Pin|Yellow_led1_Pin|Green_led1_Pin|Red_led2_Pin
-                          |Yellow_led2_Pin|Green_led2_Pin, GPIO_PIN_RESET);
+                          |Yellow_led2_Pin|Green_led2_Pin|Red_led3_Pin|Yellow_led3_Pin
+                          |Green_led3_Pin|Red_led4_Pin|Yellow_led4_Pin|Green_led4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin|Red_led3_Pin
-                          |Yellow_led3_Pin|Green_led3_Pin|Red_led4_Pin|Yellow_led4_Pin
-                          |Green_led4_Pin|d_Pin|e_Pin|f_Pin
-                          |g_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, a_Pin|b_Pin|c_Pin|d2_Pin
+                          |e2_Pin|f2_Pin|g2_Pin|d_Pin
+                          |e_Pin|f_Pin|g_Pin|a2_Pin
+                          |b2_Pin|c2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : Red_led1_Pin Yellow_led1_Pin Green_led1_Pin Red_led2_Pin
-                           Yellow_led2_Pin Green_led2_Pin */
+                           Yellow_led2_Pin Green_led2_Pin Red_led3_Pin Yellow_led3_Pin
+                           Green_led3_Pin Red_led4_Pin Yellow_led4_Pin Green_led4_Pin */
   GPIO_InitStruct.Pin = Red_led1_Pin|Yellow_led1_Pin|Green_led1_Pin|Red_led2_Pin
-                          |Yellow_led2_Pin|Green_led2_Pin;
+                          |Yellow_led2_Pin|Green_led2_Pin|Red_led3_Pin|Yellow_led3_Pin
+                          |Green_led3_Pin|Red_led4_Pin|Yellow_led4_Pin|Green_led4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : a_Pin b_Pin c_Pin Red_led3_Pin
-                           Yellow_led3_Pin Green_led3_Pin Red_led4_Pin Yellow_led4_Pin
-                           Green_led4_Pin d_Pin e_Pin f_Pin
-                           g_Pin */
-  GPIO_InitStruct.Pin = a_Pin|b_Pin|c_Pin|Red_led3_Pin
-                          |Yellow_led3_Pin|Green_led3_Pin|Red_led4_Pin|Yellow_led4_Pin
-                          |Green_led4_Pin|d_Pin|e_Pin|f_Pin
-                          |g_Pin;
+  /*Configure GPIO pins : a_Pin b_Pin c_Pin d2_Pin
+                           e2_Pin f2_Pin g2_Pin d_Pin
+                           e_Pin f_Pin g_Pin a2_Pin
+                           b2_Pin c2_Pin */
+  GPIO_InitStruct.Pin = a_Pin|b_Pin|c_Pin|d2_Pin
+                          |e2_Pin|f2_Pin|g2_Pin|d_Pin
+                          |e_Pin|f_Pin|g_Pin|a2_Pin
+                          |b2_Pin|c2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
