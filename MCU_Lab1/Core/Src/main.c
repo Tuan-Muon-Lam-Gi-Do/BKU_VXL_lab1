@@ -104,7 +104,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  HAL_Delay(1000); // Đợi 1 giây
+	  HAL_Delay(50); // Đợi 1 giây
 
 	     // Cập nhật thời gian
 	     second++;
