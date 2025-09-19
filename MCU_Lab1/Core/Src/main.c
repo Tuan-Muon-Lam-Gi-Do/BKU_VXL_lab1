@@ -63,6 +63,9 @@ uint16_t led_pins[12] = {
 int oldHour = -1;
 int oldMinute = -1;
 int oldSecond = -1;
+
+int state=0;
+uint8_t allOn = 0;
 /* USER CODE END 0 */
 
 /**
@@ -94,7 +97,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-  displayClock(hour, minute, second);
+  //displayClock(hour, minute, second);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,22 +107,29 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  HAL_Delay(50); // Đợi 1 giây
+	    if (state>=4) {
+	    	clearAllClock();
+	    }
+	   switch(state){
+			case 0:
+	               HAL_GPIO_WritePin(GPIOA, a0_Pin|a6_Pin,GPIO_PIN_RESET);
+	               state++;
+	        break;
+			case 1:
+	  HAL_GPIO_WritePin(GPIOA, a1_Pin|a11_Pin|a5_Pin|a7_Pin, GPIO_PIN_RESET);
+	  state++;
+	        break;
+			case 2:
+	  HAL_GPIO_WritePin(GPIOA, a2_Pin|a10_Pin|a4_Pin|a8_Pin, GPIO_PIN_RESET);
+	  state++;
+	  	  	break;
+			case 3:
+	  HAL_GPIO_WritePin(GPIOA, a3_Pin|a9_Pin,GPIO_PIN_RESET);
+	  state++;
+	  	  	break;
+	   }
+	   HAL_Delay(1000);
 
-	     // Cập nhật thời gian
-	     second++;
-	     if (second >= 60) {
-	         second = 0;
-	         minute++;
-	     }
-	     if (minute >= 60) {
-	         minute = 0;
-	         hour++;
-	     }
-	     if (hour >= 12) hour = 0;
-
-	     // Hiển thị đồng hồ
-	     displayClock(hour, minute, second);
 }
   /* USER CODE END 3 */
 }
