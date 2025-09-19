@@ -73,6 +73,8 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 	int hour = 0, minute = 0, second = 0;
+    int state = 0;   // 0 = đang bật dần, 1 = đang tắt dần
+    int index = 0;   // vị trí LED
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -94,7 +96,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-  displayClock(hour, minute, second);
+  //displayClock(hour, minute, second);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,22 +106,25 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  HAL_Delay(50); // Đợi 1 giây
+      if (state == 0) {
+          // Bật LED từng cái
+          setNumberOnClock(index);
+          index++;
+          if (index >= 12) {
+              state = 1;  // chuyển sang chế độ clear
+              index = 0;
+          }
+      } else {
+          // Tắt LED từng cái
+          clearNumberOnClock(index);
+          index++;
+          if (index >= 12) {
+              state = 0;  // quay lại chế độ set
+              index = 0;
+          }
+      }
 
-	     // Cập nhật thời gian
-	     second++;
-	     if (second >= 60) {
-	         second = 0;
-	         minute++;
-	     }
-	     if (minute >= 60) {
-	         minute = 0;
-	         hour++;
-	     }
-	     if (hour >= 12) hour = 0;
-
-	     // Hiển thị đồng hồ
-	     displayClock(hour, minute, second);
+      HAL_Delay(500); // chỉ 1 delay cho mỗi lần bật/tắt
 }
   /* USER CODE END 3 */
 }
